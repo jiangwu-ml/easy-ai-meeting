@@ -1,0 +1,39 @@
+.wrapper-layout {
+  .logo {
+    color: #fff;
+    font-size: larger;
+    text-align: center;
+    padding: 20px;
+    font-weight: bolder;
+  }
+  .site-layout {
+    .site-layout-header {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: #fff;
+      .header-left {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .header-left-dropDown {
+          height: 40px;
+        }
+        .header-left-avatar {
+          display: inline-block;
+          width: 40px;
+          height: 40px;
+          border-radius: 20px;
+          background-color: #fff;
+          margin-left: 20px;
+        }
+      }
+    }
+    .site-layout-content {
+      margin: 24px 16px;
+      padding: 24px;
+      min-height: 280px;
+      background-color: #fff;
+    }
+  }
+}
