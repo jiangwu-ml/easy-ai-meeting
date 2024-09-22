@@ -4,7 +4,7 @@ module.exports = {
   // 是否使用单引号而不是双引号
   singleQuote: true,
   // 缩进的空格数
-  tabWidth: 4,
+  tabWidth: 2,
   // 每行的最大字符数
   printWidth: 120,
   // 是否在多行元素的最后一行放一个括号
