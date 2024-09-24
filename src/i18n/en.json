@@ -3,5 +3,9 @@
   "lang-zh": "ZH",
   "lang-en": "EN",
   "menu.meeting-room-list": "Meeting Room List",
-  "menu.reservation-list": "Reservation List"
+  "menu.reservation-list": "Reservation List",
+  "msg.401": "Login Expired",
+  "msg.403": "Unauthorized Access",
+  "msg.404": "The resource does not exist",
+  "msg.500": "Server Failure"
 }

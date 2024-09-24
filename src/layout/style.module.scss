@@ -1,39 +1,42 @@
-.wrapper-layout {
+.wrapper_layout {
   .logo {
-    color: #fff;
+    color: $color-primary;
     font-size: larger;
     text-align: center;
     padding: 20px;
     font-weight: bolder;
   }
-  .site-layout {
-    .site-layout-header {
+  .site_layout {
+    .site_layout_header {
       display: flex;
       justify-content: space-between;
       padding: 0 20px;
       color: #fff;
-      .header-left {
+      .header_right {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        .header-left-dropDown {
+        .header_right_dropDown {
           height: 40px;
         }
-        .header-left-avatar {
+        .header_right_avatar {
           display: inline-block;
           width: 40px;
           height: 40px;
           border-radius: 20px;
-          background-color: #fff;
           margin-left: 20px;
+        }
+        img {
+          cursor: pointer;
         }
       }
     }
-    .site-layout-content {
+    .site_layout_content {
       margin: 24px 16px;
       padding: 24px;
-      min-height: 280px;
+      min-height: calc(100vh - 64px - 48px);
       background-color: #fff;
+      box-sizing: border-box;
     }
   }
 }

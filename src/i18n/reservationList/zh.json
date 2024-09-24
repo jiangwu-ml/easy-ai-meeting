@@ -1,0 +1,8 @@
+{
+  "rl.header-title": "预订记录",
+  "rl.columns.userId": "预订人ID",
+  "rl.columns.userName": "预订人",
+  "rl.columns.roomId": "会议室ID",
+  "rl.columns.roomName": "会议室名称",
+  "rl.columns.time": "使用时间"
+}

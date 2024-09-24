@@ -1,4 +1,18 @@
 {
-  "sub-title": "对不起，当前您访问的页面不存在。",
-  "back-home":"返回主页"
+  "nf.sub-title": "对不起，当前您访问的页面不存在。",
+  "nf.back-home": "返回主页",
+  "mrl.new": "新增",
+  "mrl.columns.index": "序号",
+  "mrl.columns.roomName": "名称",
+  "mrl.columns.status": "状态",
+  "mrl.columns.capacity": "容纳人数",
+  "mrl.columns.actions": "操作",
+  "mrl.columns.offLine": "离线",
+  "mrl.columns.onLine": "在线",
+  "mrl.columns.location": "详细地址",
+  "mrl.header-title": "会议室列表",
+  "mrl.columns.actions.enable": "启用",
+  "mrl.columns.actions.disable": "禁用",
+  "mrl.msg.changeStatus.enable.success": "启用成功",
+  "mrl.msg.changeStatus.disable.success": "禁用成功"
 }
