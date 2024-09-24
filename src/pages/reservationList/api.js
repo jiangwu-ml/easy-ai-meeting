@@ -6,10 +6,9 @@ export function getReservationList(params) {
     data: params,
   });
 }
-export function cancelReservation(params) {
+export function cancelReservation(id) {
   return request({
     method: 'get',
-    url: '/reservation/cancel/{id}',
-    data: params,
+    url: `/reservation/cancel/${id}`,
   });
 }

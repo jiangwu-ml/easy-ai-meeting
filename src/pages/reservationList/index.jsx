@@ -1,14 +1,18 @@
-import { PlusOutlined } from '@ant-design/icons';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Divider, Popover, Spin } from 'antd';
+import { message, Popconfirm, Popover, Spin } from 'antd';
+import { isNil } from 'lodash';
 import moment from 'moment';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getReservationList } from './api';
+import { useLocation } from 'react-router-dom';
+import { cancelReservation, getReservationList } from './api';
 
 export default function ReservationList() {
+  const actionRef = useRef();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const { state } = useLocation();
+  const formRef = useRef();
 
   const columns = [
     {
@@ -74,21 +78,32 @@ export default function ReservationList() {
       title: t('mrl.columns.actions'),
       key: 'actions',
       search: false,
-      render: (text, record) => {
-        // const { status } = record;
+      render: (_, record, index) => {
+        const { id } = record;
         return (
-          <>
-            <a>取消预定</a>
-            <Divider type='vertical' />
-            <a href={record.url} target='_blank' rel='noopener noreferrer'>
-              查看
-            </a>
-          </>
+          <Popconfirm title={t('msg.confirm.cancel')} onConfirm={cancelRes(id, index)}>
+            <a style={{ marginLeft: 16 }}>{t('rl.columns.actions.cancel')}</a>
+          </Popconfirm>
         );
       },
     },
   ];
+  useEffect(() => {
+    const { roomId } = state || {};
+    if (!isNil(roomId)) formRef.current.setFieldsValue({ roomId });
+  }, []);
 
+  // 取消预订
+  const cancelRes = (id) => async () => {
+    console.log('id', id);
+    const { success } = await cancelReservation(id);
+    if (success) {
+      actionRef.current.reload();
+      message.success(t(`rl.msg.cancelReservation.success`));
+    }
+    setLoading(false);
+  };
+  // 请求数据
   const tableRequest = async (params) => {
     setLoading(true);
     const { pageSize, status, ...otherParams } = params;
@@ -102,16 +117,26 @@ export default function ReservationList() {
       data: { total, records = [] },
     } = await getReservationList(getListParams);
     setLoading(false);
-    return {
-      data: records,
-      success, // success 请返回 true，不然 table 会停止解析数据，即使有数据
-      total, // 不传会使用 data 的长度，如果是分页一定要传
-    };
+    if (success) {
+      return {
+        data: records,
+        success, // success 请返回 true，不然 table 会停止解析数据，即使有数据
+        total, // 不传会使用 data 的长度，如果是分页一定要传
+      };
+    } else {
+      return {
+        data: [],
+        success: false, // success 请返回 true，不然 table 会停止解析数据，即使有数据
+        total: 0, // 不传会使用 data 的长度，如果是分页一定要传
+      };
+    }
   };
   return (
     <Spin spinning={loading}>
       <ProTable
         columns={columns}
+        formRef={formRef}
+        actionRef={actionRef}
         search={{ defaultCollapsed: false }}
         cardBordered
         request={tableRequest}
@@ -121,11 +146,6 @@ export default function ReservationList() {
           showSizeChanger: true,
         }}
         headerTitle={t('rl.header-title')}
-        toolBarRender={() => [
-          <Button key='button' icon={<PlusOutlined />} type='primary'>
-            {t('mrl.new')}
-          </Button>,
-        ]}
       />
     </Spin>
   );

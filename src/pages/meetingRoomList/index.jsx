@@ -1,17 +1,23 @@
+import { getUserInfo } from '@/utils/token';
 import { omitObjEmpty } from '@/utils/utils';
 import { PlusOutlined } from '@ant-design/icons';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { Button, Divider, message, Spin } from 'antd';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { meetingRoomStatus } from '../../utils/dict';
 import { getMeetingRoomList, updateMeetingRoom } from './api';
 import { roomList } from './mockData';
 
+const { admin } = getUserInfo();
 export default function MeetingRoomList() {
-  // const actionRef = useRef();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [dataSource, setDataSource] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [isAdmin] = useState(admin);
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -58,16 +64,16 @@ export default function MeetingRoomList() {
       title: t('mrl.columns.actions'),
       key: 'actions',
       search: false,
-      render: (text, record, _, action) => {
-        const { status } = record;
+      render: (text, record, index, action) => {
+        const { status, id } = record;
         return (
           <>
-            <a onClick={changeMeetingRoomStatus(record)}>
+            <a onClick={changeMeetingRoomStatus(record, index)}>
               {t(`mrl.columns.actions.${meetingRoomStatus[status].action}`)}
             </a>
             <Divider type='vertical' />
-            <a href={record.url} target='_blank' rel='noopener noreferrer'>
-              查看
+            <a onClick={() => navigate('/reservation-list', { state: { roomId: id } })}>
+              {t(`mrl.columns.actions.toRl`)}
             </a>
             <Divider type='vertical' />
             <TableDropdown
@@ -83,14 +89,15 @@ export default function MeetingRoomList() {
       },
     },
   ];
-  const changeMeetingRoomStatus = (record) => () => {
+  const changeMeetingRoomStatus = (record, index) => async () => {
     const { id, status } = record;
     setLoading(true);
     const newStatus = status === 0 ? 1 : 0;
-    const { success } = updateMeetingRoom({ id, status: newStatus });
+    const { success } = await updateMeetingRoom({ id, status: newStatus });
     if (success) {
-      record.status = newStatus;
-      message.success(t(`mrl.msg.changeStatus.${meetingRoomStatus[newStatus].action}.success`));
+      dataSource[index].status = newStatus;
+      setDataSource([...dataSource]);
+      message.success(t(`mrl.msg.changeStatus.${meetingRoomStatus[status].action}.success`));
     }
     setLoading(false);
   };
@@ -108,33 +115,43 @@ export default function MeetingRoomList() {
       success,
       data: { total, records = [] },
     } = await getMeetingRoomList(getListParams);
-    setLoading(false);
-    return {
-      data: records,
-      success, // success 请返回 true，不然 table 会停止解析数据，即使有数据
-      total, // 不传会使用 data 的长度，如果是分页一定要传
-    };
+    if (success) {
+      setLoading(false);
+      setDataSource(records);
+      setTotal(total);
+      setLoading(false);
+    }
+    // return {
+    //   data: records,
+    //   success, // success 请返回 true，不然 table 会停止解析数据，即使有数据
+    //   total, // 不传会使用 data 的长度，如果是分页一定要传
+    // };
   };
   return (
     <Spin spinning={loading}>
       <ProTable
         columns={columns}
         search={{ defaultCollapsed: false }}
-        // actionRef={actionRef}
         cardBordered
         request={tableRequest}
+        dataSource={dataSource}
         rowKey='id'
         options={false} // 新增按钮的右边 、table 工具栏，设为 false 时不显示，
         pagination={{
           showSizeChanger: true,
+          total: total,
         }}
         defaultData={roomList}
         headerTitle={t('mrl.header-title')}
-        toolBarRender={() => [
-          <Button key='button' icon={<PlusOutlined />} type='primary'>
-            {t('mrl.new')}
-          </Button>,
-        ]}
+        toolBarRender={() =>
+          isAdmin
+            ? [
+                <Button key='button' icon={<PlusOutlined />} type='primary'>
+                  {t('mrl.new')}
+                </Button>,
+              ]
+            : null
+        }
       />
     </Spin>
   );

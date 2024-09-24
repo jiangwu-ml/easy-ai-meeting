@@ -3,10 +3,11 @@
   "lang-zh": "中文",
   "lang-en": "英文",
   "menu.meeting-room-list": "会议室列表",
-  "menu.reservation-list": "预订记录",
+  "menu.reservation-list": "预定记录",
   "msg.401": "登录过期，即将跳转至登录页",
   "msg.403": "无权访问",
   "msg.404": "资源不存在",
   "msg.500": "服务器开了小差",
+  "msg.confirm.cancel": "确认取消？",
   "msg.error.title": "错误提示"
 }

@@ -1,9 +1,9 @@
 import { logout } from '@/pages/login/api';
 import { layoutChildren } from '@/router';
-import { getToken, getTokenPayload, removeToken } from '@/utils/token';
+import { removeToken } from '@/utils/token';
 import { omitArrEmpty } from '@/utils/utils';
 import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Dropdown, Layout, Menu, message, Space, Spin } from 'antd';
+import { Button, Dropdown, Layout, Menu, message, Space, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -18,8 +18,6 @@ const PageLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
-
-  console.log('getTokenPayload(getToken())', getTokenPayload(getToken()));
 
   const createMenuItems = (oriList) => {
     const res = oriList.map((item) => {
@@ -81,46 +79,32 @@ const PageLayout = () => {
             </span>
 
             <div className={style.header_right}>
-              <Dropdown
-                className={style.header_right_dropDown}
-                menu={{
-                  items: [
-                    {
-                      key: 'zh',
-                      label: t('lang-zh'),
-                    },
-                    {
-                      key: 'en',
-                      label: t('lang-en'),
-                    },
-                  ],
-                  selectable: true,
-                  onClick: changeLang,
-                }}>
-                <Space>
-                  {t('language')}
-                  <DownOutlined />
-                </Space>
-              </Dropdown>
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      label: (
-                        <>
-                          {t('login.logout')} <LogoutOutlined />
-                        </>
-                      ),
-                      key: 'logout',
-                    },
-                  ],
-                  onClick: logOut,
-                  selectable: true,
-                }}>
-                <img
-                  className={style.header_right_avatar}
-                  src='https://pic36.photophoto.cn/20150810/0017029569625120_b.jpg'></img>
-              </Dropdown>
+              <Space>
+                <Dropdown
+                  className={style.header_right_dropDown}
+                  menu={{
+                    items: [
+                      {
+                        key: 'zh',
+                        label: t('lang-zh'),
+                      },
+                      {
+                        key: 'en',
+                        label: t('lang-en'),
+                      },
+                    ],
+                    selectable: true,
+                    onClick: changeLang,
+                  }}>
+                  <Space>
+                    {t('language')}
+                    <DownOutlined />
+                  </Space>
+                </Dropdown>
+                <Button onClick={logOut}>
+                  {t('login.logout')} <LogoutOutlined />
+                </Button>
+              </Space>
             </div>
           </Header>
           <Content className={style.site_layout_content}>

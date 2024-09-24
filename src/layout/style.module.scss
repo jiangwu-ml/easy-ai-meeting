@@ -18,6 +18,7 @@
         align-items: center;
         .header_right_dropDown {
           height: 40px;
+          cursor: pointer;
         }
         .header_right_avatar {
           display: inline-block;
@@ -26,8 +27,13 @@
           border-radius: 20px;
           margin-left: 20px;
         }
-        img {
-          cursor: pointer;
+        button {
+          background-color: transparent;
+          border: none;
+          color: #fff;
+          :hover {
+            color: $color-primary;
+          }
         }
       }
     }

@@ -13,6 +13,7 @@
   "mrl.header-title": "会议室列表",
   "mrl.columns.actions.enable": "启用",
   "mrl.columns.actions.disable": "禁用",
+  "mrl.columns.actions.toRl": "预定记录",
   "mrl.msg.changeStatus.enable.success": "启用成功",
   "mrl.msg.changeStatus.disable.success": "禁用成功"
 }
