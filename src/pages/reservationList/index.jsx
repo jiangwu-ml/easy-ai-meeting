@@ -1,4 +1,5 @@
 import { meetingRoomStatus } from '@/utils/dict';
+import { getUserInfo } from '@/utils/token';
 import { omitObjEmpty } from '@/utils/utils';
 import { PlusOutlined } from '@ant-design/icons';
 import { ProTable } from '@ant-design/pro-components';
@@ -12,13 +13,14 @@ import ReserveMeetingRoom from '../meetingRoomList/components/reserveMeetingRoom
 import { cancelReservation, getMeetingRoomSearchList, getReservationList, getUserSearchList } from './api';
 
 export default function ReservationList() {
+  const { admin } = getUserInfo();
   const actionRef = useRef();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const { state } = useLocation();
   const [isReserveModelOpen, setIsReserveModalOpen] = useState(false);
 
-  const columns = [
+  const baseColumns = [
     {
       dataIndex: 'index',
       valueType: 'index',
@@ -96,24 +98,29 @@ export default function ReservationList() {
       },
       params: '/user/searchList',
     },
-    {
-      title: t('rl.columns.userIdList'),
-      dataIndex: 'userIdList',
-      search: true,
-      hideInTable: true,
-      // 大部分时候我们是从网络中获取数据，但是获取写一个 hooks 来请求数据还是比较繁琐的，同时还要定义一系列状态，所以我们提供了 request 和 params 来获取数据。
-      // request ：是一个 promise，需要返回一个 options 相同的数据
-      // params ：一般而言 request 是惰性的，params 修改会触发 request 的重新请求。
-      request: async () => {
-        const { data = [] } = await getUserSearchList();
-        const userList = data.map(({ id, name }) => {
-          return { label: name, value: id };
-        });
-        return userList;
-      },
-      params: '/user/searchList', //此处并不发生改变
-    },
   ];
+  const columns = admin
+    ? [
+        ...baseColumns,
+        {
+          title: t('rl.columns.userIdList'),
+          dataIndex: 'userIdList',
+          search: true,
+          hideInTable: true,
+          // 大部分时候我们是从网络中获取数据，但是获取写一个 hooks 来请求数据还是比较繁琐的，同时还要定义一系列状态，所以我们提供了 request 和 params 来获取数据。
+          // request ：是一个 promise，需要返回一个 options 相同的数据
+          // params ：一般而言 request 是惰性的，params 修改会触发 request 的重新请求。
+          request: async () => {
+            const { data = [] } = await getUserSearchList();
+            const userList = data.map(({ id, name }) => {
+              return { label: name, value: id };
+            });
+            return userList;
+          },
+          params: '/user/searchList', //此处并不发生改变
+        },
+      ]
+    : baseColumns;
 
   // 取消预订
   const cancelRes = (id) => async () => {
@@ -157,6 +164,7 @@ export default function ReservationList() {
   const closeModel = () => {
     setIsReserveModalOpen(false);
   };
+
   return (
     <Spin spinning={!!loading}>
       <ProTable
