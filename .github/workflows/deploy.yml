@@ -1,0 +1,38 @@
+#reference： https://www.ruanyifeng.com/blog/2019/09/getting-started-with-github-actions.html
+name: Deploy To Github Pages
+run-name: Deploy To Github Pages 🚀
+on:
+  push:
+    branches:
+      - develop # 指定动作下 会运行 workflow
+jobs:
+  Explore-GitHub-Actions:
+    name: My Job
+    runs-on: ubuntu-latest # runs-on字段指定运行所需要的虚拟机环境。它是必填字段
+    steps:
+      # step 1
+      - name: Print a greeting
+        env:
+          MY_VAR: Hi there! My name is
+          FIRST_NAME: Meng
+          MIDDLE_NAME: _
+          LAST_NAME: Nico
+        run: |
+         echo $MY_VAR $FIRST_NAME $MIDDLE_NAME $LAST_NAME.
+      # step 2
+      - name: Checkout
+        uses: actions/checkout@master
+      # step 3
+      - name: Install and Build 🔧
+        run: |
+          npm install --force
+          npm run build
+       # step 4
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: github-pages # The branch the action should deploy to.
+          FOLDER: dist # The folder the action should deploy.
+
+      - run: echo "🍏 This job's status is ${{ job.status }}."
