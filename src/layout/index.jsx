@@ -1,9 +1,10 @@
 import { logout } from '@/pages/login/api';
 import { layoutChildren } from '@/router';
-import { removeToken } from '@/utils/token';
+import { removeToken, removeUserInfo } from '@/utils/token';
 import { omitArrEmpty } from '@/utils/utils';
-import { DownOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Button, Dropdown, Layout, Menu, message, Space, Spin } from 'antd';
+import { DownOutlined, ExclamationCircleOutlined, LogoutOutlined } from '@ant-design/icons';
+
+import { Button, Dropdown, Layout, Menu, message, Modal, Space, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -15,6 +16,7 @@ const PageLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedKey, setSelectedKey] = useState('/');
+  const [modal, contextHolder] = Modal.useModal();
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
@@ -46,15 +48,16 @@ const PageLayout = () => {
     setLoading(true);
     const { success } = await logout();
     if (success) {
-      message.success(t('login.msg.logout.success'));
       removeToken();
+      removeUserInfo();
       navigate('/login');
-      return;
+      message.success(t('login.msg.logout.success'));
+    } else {
+      message.error(t('login.msg.logout.error'));
     }
-    message.error(t('login.msg.logout.error'));
-
     setLoading(false);
   };
+
   return (
     <Spin spinning={loading}>
       <Layout className={style.wrapper_layout}>
@@ -77,7 +80,6 @@ const PageLayout = () => {
             <span className={style.trigger} onClick={() => setCollapsed(!collapsed)}>
               {/* {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} */}
             </span>
-
             <div className={style.header_right}>
               <Space>
                 <Dropdown
@@ -93,7 +95,6 @@ const PageLayout = () => {
                         label: t('lang-en'),
                       },
                     ],
-                    selectable: true,
                     onClick: changeLang,
                   }}>
                   <Space>
@@ -101,7 +102,19 @@ const PageLayout = () => {
                     <DownOutlined />
                   </Space>
                 </Dropdown>
-                <Button onClick={logOut}>
+                <Button
+                  onClick={() => {
+                    modal.confirm({
+                      title: t('login.msg.logout.confirm.title'),
+                      icon: <ExclamationCircleOutlined />,
+                      content: t('login.msg.logout.confirm.content'),
+                      okText: t('msg.modal.okText'),
+                      cancelText: t('msg.modal.cancelText'),
+                      onOk: logOut,
+                    });
+                  }}
+                  ghost
+                  style={{ border: 'none' }}>
                   {t('login.logout')} <LogoutOutlined />
                 </Button>
               </Space>
@@ -111,6 +124,7 @@ const PageLayout = () => {
             <Outlet />
           </Content>
         </Layout>
+        {contextHolder}
       </Layout>
     </Spin>
   );

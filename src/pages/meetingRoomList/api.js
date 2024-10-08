@@ -13,3 +13,25 @@ export function updateMeetingRoom(params) {
     data: params,
   });
 }
+export function addMeetingRoom(params) {
+  return request({
+    method: 'post',
+    url: '/meetingRoom/add',
+    data: params,
+  });
+}
+
+export function bookMeetingRoom(params) {
+  return request({
+    method: 'post',
+    url: '/meetingRoom/book',
+    data: params,
+  });
+}
+
+export function getTimeOccupyList(roomId) {
+  return request({
+    method: 'get',
+    url: `/reservation/occupy/${roomId}`,
+  });
+}

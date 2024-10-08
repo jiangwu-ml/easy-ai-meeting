@@ -1,11 +1,15 @@
+import { meetingRoomStatus } from '@/utils/dict';
+import { omitObjEmpty } from '@/utils/utils';
+import { PlusOutlined } from '@ant-design/icons';
 import { ProTable } from '@ant-design/pro-components';
-import { message, Popconfirm, Popover, Spin } from 'antd';
+import { Button, message, Popconfirm, Popover, Spin } from 'antd';
 import { isNil } from 'lodash';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { cancelReservation, getReservationList } from './api';
+import ReserveMeetingRoom from '../meetingRoomList/components/reserveMeetingRoom';
+import { cancelReservation, getMeetingRoomSearchList, getReservationList, getUserSearchList } from './api';
 
 export default function ReservationList() {
   const actionRef = useRef();
@@ -13,6 +17,13 @@ export default function ReservationList() {
   const [loading, setLoading] = useState(false);
   const { state } = useLocation();
   const formRef = useRef();
+  const [isReserveModelOpen, setIsReserveModalOpen] = useState(false);
+
+  useEffect(() => {
+    // 设置选中的会议室id
+    const { roomId } = state || {};
+    if (!isNil(roomId)) formRef.current.setFieldsValue({ roomIdList: roomId });
+  }, []);
 
   const columns = [
     {
@@ -29,20 +40,8 @@ export default function ReservationList() {
       ellipsis: true,
     },
     {
-      title: t('rl.columns.roomId'),
-      dataIndex: 'roomId',
-      search: true,
-      ellipsis: true,
-    },
-    {
       title: t('rl.columns.userName'),
       dataIndex: 'userName',
-      search: false,
-      ellipsis: true,
-    },
-    {
-      title: t('rl.columns.userId'),
-      dataIndex: 'userId',
       search: false,
       ellipsis: true,
     },
@@ -63,14 +62,15 @@ export default function ReservationList() {
       title: t('mrl.columns.status'),
       dataIndex: 'status',
       valueType: 'select',
+      search: false,
       valueEnum: {
         0: {
-          text: t('mrl.columns.onLine'),
+          text: t('mrl.columns.actions.' + meetingRoomStatus[0]),
           status: 'Success',
         },
         1: {
-          text: t('mrl.columns.offLine'),
-          status: 'Default',
+          text: t('mrl.columns.actions.' + meetingRoomStatus[1]),
+          status: 'Error',
         },
       },
     },
@@ -87,15 +87,42 @@ export default function ReservationList() {
         );
       },
     },
+    // 以下两列，只用于搜索， 不展示
+    {
+      title: t('rl.columns.roomIdList'),
+      dataIndex: 'roomIdList',
+      search: true, //在搜索栏内展示
+      hideInTable: true, //在Table中隐藏
+      request: async () => {
+        const { data = [] } = await getMeetingRoomSearchList();
+        const userList = data.map(({ id, roomName }) => {
+          return { label: roomName, value: id };
+        });
+        return userList;
+      },
+      params: '/user/searchList',
+    },
+    {
+      title: t('rl.columns.userIdList'),
+      dataIndex: 'userIdList',
+      search: true,
+      hideInTable: true,
+      // 大部分时候我们是从网络中获取数据，但是获取写一个 hooks 来请求数据还是比较繁琐的，同时还要定义一系列状态，所以我们提供了 request 和 params 来获取数据。
+      // request ：是一个 promise，需要返回一个 options 相同的数据
+      // params ：一般而言 request 是惰性的，params 修改会触发 request 的重新请求。
+      request: async () => {
+        const { data = [] } = await getUserSearchList();
+        const userList = data.map(({ id, name }) => {
+          return { label: name, value: id };
+        });
+        return userList;
+      },
+      params: '/user/searchList', //此处并不发生改变
+    },
   ];
-  useEffect(() => {
-    const { roomId } = state || {};
-    if (!isNil(roomId)) formRef.current.setFieldsValue({ roomId });
-  }, []);
 
   // 取消预订
   const cancelRes = (id) => async () => {
-    console.log('id', id);
     const { success } = await cancelReservation(id);
     if (success) {
       actionRef.current.reload();
@@ -105,13 +132,15 @@ export default function ReservationList() {
   };
   // 请求数据
   const tableRequest = async (params) => {
+    console.log('params', params);
     setLoading(true);
-    const { pageSize, status, ...otherParams } = params;
-    const getListParams = {
+    const { pageSize, userIdList, roomIdList, ...otherParams } = params;
+    const getListParams = omitObjEmpty({
       size: pageSize,
-      status: ['0', '1'].includes(status) ? [status] : undefined,
+      userIdList: isNil(userIdList) ? userIdList : [userIdList],
+      roomIdList: isNil(roomIdList) ? roomIdList : [roomIdList],
       ...otherParams,
-    };
+    });
     const {
       success,
       data: { total, records = [] },
@@ -131,8 +160,11 @@ export default function ReservationList() {
       };
     }
   };
+  const closeModel = () => {
+    setIsReserveModalOpen(false);
+  };
   return (
-    <Spin spinning={loading}>
+    <Spin spinning={!!loading}>
       <ProTable
         columns={columns}
         formRef={formRef}
@@ -146,7 +178,19 @@ export default function ReservationList() {
           showSizeChanger: true,
         }}
         headerTitle={t('rl.header-title')}
+        toolBarRender={() => [
+          <Button
+            key='button'
+            onClick={() => {
+              setIsReserveModalOpen(true);
+            }}
+            icon={<PlusOutlined />}
+            type='primary'>
+            {t('rl.add.reservation')}
+          </Button>,
+        ]}
       />
+      <ReserveMeetingRoom isModalOpen={isReserveModelOpen} closeModel={closeModel} />
     </Spin>
   );
 }

@@ -9,5 +9,7 @@
   "msg.404": "资源不存在",
   "msg.500": "服务器开了小差",
   "msg.confirm.cancel": "确认取消？",
+  "msg.modal.okText": "确认",
+  "msg.modal.cancelText": "取消",
   "msg.error.title": "错误提示"
 }

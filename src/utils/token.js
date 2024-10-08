@@ -19,7 +19,7 @@ export function getToken() {
 
 export function getUserInfo() {
   const userInfo = get('token-userInfo');
-  return JSON.parse(userInfo);
+  return userInfo ? JSON.parse(userInfo) : {};
 }
 
 export function setToken(token) {
@@ -36,5 +36,5 @@ export function removeToken() {
 }
 
 export function removeUserInfo() {
-  set('token-userInfo');
+  remove('token-userInfo');
 }

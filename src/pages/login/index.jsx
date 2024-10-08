@@ -10,7 +10,6 @@ import style from './style.module.scss';
 function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  console.log('login', login);
   const onFinish = async (values) => {
     const {
       success,
@@ -67,7 +66,7 @@ function Login() {
           remember: true,
         }}
         onFinish={onFinish}
-        autoComplete>
+        autoComplete='true'>
         <h1>Hello</h1>
         <h5>{t('login.h5')} Easy AI Meeting</h5>
         <Form.Item

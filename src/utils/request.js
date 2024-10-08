@@ -31,7 +31,7 @@ request.interceptors.response.use(
   (err) => {
     // 失败的回调。处理 网络错误。比如 500都在这里统一处理了。不用每次调接口都处理
     let message = '';
-    const { status } = err.response;
+    const { status } = err?.response || {};
     switch (status) {
       case 401:
         message = i18n.t('msg.401');
@@ -53,7 +53,9 @@ request.interceptors.response.use(
       description: message,
       onClose: () => {
         if (status === 401) {
-          location.href = '/login';
+          // location.href = '/login';
+          // removeToken();
+          // removeUserInfo();
         }
       },
     });

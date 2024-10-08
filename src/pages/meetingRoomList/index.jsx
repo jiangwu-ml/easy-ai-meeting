@@ -1,20 +1,29 @@
 import { getUserInfo } from '@/utils/token';
 import { omitObjEmpty } from '@/utils/utils';
 import { PlusOutlined } from '@ant-design/icons';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
+import { ProTable } from '@ant-design/pro-components';
 import { Button, Divider, message, Spin } from 'antd';
-import { useState } from 'react';
+import { cloneDeep } from 'lodash';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { meetingRoomStatus } from '../../utils/dict';
+import { meetingRoomActions, meetingRoomStatus } from '../../utils/dict';
 import { getMeetingRoomList, updateMeetingRoom } from './api';
+import MeetingRoom from './components/meetingRoom';
+import ReserveMeetingRoom from './components/reserveMeetingRoom';
 import { roomList } from './mockData';
 
-const { admin } = getUserInfo();
 export default function MeetingRoomList() {
+  const { admin } = getUserInfo();
   const { t } = useTranslation();
+  const actionRef = useRef();
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(meetingRoomActions.add);
+  const [isReserveModelOpen, setIsReserveModalOpen] = useState(false);
+  const [curRoom, setCurRoom] = useState();
+  const [curMeetingRoom, setCurMeetingRoom] = useState(null);
   const [total, setTotal] = useState(0);
   const [isAdmin] = useState(admin);
   const navigate = useNavigate();
@@ -51,12 +60,12 @@ export default function MeetingRoomList() {
       valueType: 'select',
       valueEnum: {
         0: {
-          text: t('mrl.columns.onLine'),
+          text: t('mrl.columns.actions.' + meetingRoomStatus[0]),
           status: 'Success',
         },
         1: {
-          text: t('mrl.columns.offLine'),
-          status: 'Default',
+          text: t('mrl.columns.actions.' + meetingRoomStatus[1]),
+          status: 'Error',
         },
       },
     },
@@ -64,31 +73,73 @@ export default function MeetingRoomList() {
       title: t('mrl.columns.actions'),
       key: 'actions',
       search: false,
-      render: (text, record, index, action) => {
+      render: (text, record, index) => {
         const { status, id } = record;
+        const newStatus = status === 0 ? 1 : 0;
         return (
           <>
-            <a onClick={changeMeetingRoomStatus(record, index)}>
-              {t(`mrl.columns.actions.${meetingRoomStatus[status].action}`)}
-            </a>
-            <Divider type='vertical' />
+            {isAdmin && (
+              <>
+                <a onClick={changeMeetingRoomStatus(record, index)}>
+                  {t(`mrl.columns.actions.${meetingRoomStatus[newStatus]}`)}
+                </a>
+                <Divider type='vertical' />
+                <a onClick={delMeetingRoom(record)}>{t('mrl.columns.actions.del')}</a>
+                <Divider type='vertical' />
+                <a onClick={editMeetingRoom(record)}>{t('mrl.columns.actions.edit')}</a>
+                <Divider type='vertical' />
+              </>
+            )}
+            {status === 0 && (
+              <>
+                <a
+                  onClick={() => {
+                    setIsReserveModalOpen(true);
+                    setCurRoom(id);
+                  }}>
+                  {t('mrl.columns.actions.reserve')}
+                </a>
+                <Divider type='vertical' />
+              </>
+            )}
             <a onClick={() => navigate('/reservation-list', { state: { roomId: id } })}>
-              {t(`mrl.columns.actions.toRl`)}
+              {t('mrl.columns.actions.toRl')}
             </a>
-            <Divider type='vertical' />
-            <TableDropdown
-              key='actionGroup'
-              onSelect={() => action?.reload()}
-              menus={[
-                { key: 'copy', name: '复制' },
-                { key: 'delete', name: '删除' },
-              ]}
-            />
           </>
         );
       },
     },
   ];
+
+  const closeModel = () => {
+    setIsModalOpen(false);
+  };
+
+  const reload = () => {
+    actionRef.current.reload();
+  };
+
+  // 删除会议室
+  const delMeetingRoom = (record) => async () => {
+    const { id } = record;
+    setLoading(true);
+    const { success } = await updateMeetingRoom({ id, status: -1 });
+    setLoading(false);
+    if (success) {
+      message.success(t(`mrl.msg.changeStatus.del.success`));
+      // 重新加载数据
+      reload();
+    }
+  };
+
+  // 编辑会议室
+  const editMeetingRoom = (record) => () => {
+    setIsModalOpen(true);
+    setCurMeetingRoom(record);
+    setModalType(meetingRoomActions.edit);
+  };
+
+  // 启用、禁用
   const changeMeetingRoomStatus = (record, index) => async () => {
     const { id, status } = record;
     setLoading(true);
@@ -97,7 +148,7 @@ export default function MeetingRoomList() {
     if (success) {
       dataSource[index].status = newStatus;
       setDataSource([...dataSource]);
-      message.success(t(`mrl.msg.changeStatus.${meetingRoomStatus[status].action}.success`));
+      message.success(t(`mrl.msg.changeStatus.${meetingRoomStatus[status]}.success`));
     }
     setLoading(false);
   };
@@ -105,12 +156,11 @@ export default function MeetingRoomList() {
   const tableRequest = async (params) => {
     setLoading(true);
     const { pageSize, status, ...otherParams } = params;
-    const getListParams = {
+    const getListParams = omitObjEmpty({
       size: pageSize,
-      status: ['0', '1'].includes(status) ? [status] : undefined,
+      status: [0, 1].includes(Number(status)) ? [Number(status)] : undefined,
       ...otherParams,
-    };
-    console.log('getListParams', getListParams, omitObjEmpty(getListParams));
+    });
     const {
       success,
       data: { total, records = [] },
@@ -127,10 +177,14 @@ export default function MeetingRoomList() {
     //   total, // 不传会使用 data 的长度，如果是分页一定要传
     // };
   };
+  const closeReserveModel = () => {
+    setIsReserveModalOpen(false);
+  };
   return (
     <Spin spinning={loading}>
       <ProTable
         columns={columns}
+        actionRef={actionRef}
         search={{ defaultCollapsed: false }}
         cardBordered
         request={tableRequest}
@@ -146,12 +200,31 @@ export default function MeetingRoomList() {
         toolBarRender={() =>
           isAdmin
             ? [
-                <Button key='button' icon={<PlusOutlined />} type='primary'>
+                <Button
+                  key='button'
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setModalType(meetingRoomActions.add);
+                  }}
+                  icon={<PlusOutlined />}
+                  type='primary'>
                   {t('mrl.new')}
                 </Button>,
               ]
             : null
         }
+      />
+      <MeetingRoom
+        isModalOpen={isModalOpen}
+        modalType={modalType}
+        closeModel={closeModel}
+        reload={reload}
+        initialValue={cloneDeep(curMeetingRoom)}
+      />
+      <ReserveMeetingRoom
+        isModalOpen={isReserveModelOpen}
+        closeModel={closeReserveModel}
+        initialValue={{ roomId: curRoom }}
       />
     </Spin>
   );
