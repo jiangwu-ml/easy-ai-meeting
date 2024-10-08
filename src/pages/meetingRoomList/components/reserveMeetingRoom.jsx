@@ -107,7 +107,6 @@ export default function ReserveMeetingRoom(props) {
     setReservationList(timeOccupyList);
   };
 
-  console.log('form', form.getFieldsValue());
   return (
     <Spin spinning={!!loading}>
       <Modal

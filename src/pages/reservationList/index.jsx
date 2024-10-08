@@ -5,7 +5,7 @@ import { ProTable } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Popover, Spin } from 'antd';
 import { isNil } from 'lodash';
 import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import ReserveMeetingRoom from '../meetingRoomList/components/reserveMeetingRoom';
@@ -16,14 +16,7 @@ export default function ReservationList() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const { state } = useLocation();
-  const formRef = useRef();
   const [isReserveModelOpen, setIsReserveModalOpen] = useState(false);
-
-  useEffect(() => {
-    // 设置选中的会议室id
-    const { roomId } = state || {};
-    if (!isNil(roomId)) formRef.current.setFieldsValue({ roomIdList: roomId });
-  }, []);
 
   const columns = [
     {
@@ -93,6 +86,7 @@ export default function ReservationList() {
       dataIndex: 'roomIdList',
       search: true, //在搜索栏内展示
       hideInTable: true, //在Table中隐藏
+      initialValue: state?.roomId || undefined, //通过此属性实现 指定会议室的预订记录
       request: async () => {
         const { data = [] } = await getMeetingRoomSearchList();
         const userList = data.map(({ id, roomName }) => {
@@ -143,7 +137,7 @@ export default function ReservationList() {
     });
     const {
       success,
-      data: { total, records = [] },
+      data: { total = 0, records = [] },
     } = await getReservationList(getListParams);
     setLoading(false);
     if (success) {
@@ -167,7 +161,6 @@ export default function ReservationList() {
     <Spin spinning={!!loading}>
       <ProTable
         columns={columns}
-        formRef={formRef}
         actionRef={actionRef}
         search={{ defaultCollapsed: false }}
         cardBordered
