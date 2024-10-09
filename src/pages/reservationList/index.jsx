@@ -191,7 +191,7 @@ export default function ReservationList() {
           </Button>,
         ]}
       />
-      <ReserveMeetingRoom isModalOpen={isReserveModelOpen} closeModel={closeModel} />
+      <ReserveMeetingRoom isModalOpen={isReserveModelOpen} closeModel={closeModel} initialValue={{}} />
     </Spin>
   );
 }

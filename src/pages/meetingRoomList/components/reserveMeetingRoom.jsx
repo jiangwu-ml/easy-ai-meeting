@@ -59,7 +59,7 @@ export default function ReserveMeetingRoom(props) {
     const { roomId } = initialValue;
     form.setFieldsValue({ ...initialValue });
     if (!isNil(roomId)) handleRoomIdChange(roomId); //初始化时获取默认选择的会议室的预订信息
-  }, []);
+  }, [initialValue]);
 
   const onFinish = async () => {
     const { date, roomId } = form.getFieldsValue();
@@ -108,18 +108,18 @@ export default function ReserveMeetingRoom(props) {
   };
 
   return (
-    <Spin spinning={!!loading}>
-      <Modal
-        title={t(`mrl.meeting-room.modal.reserve`)}
-        okText={t('mrl.meeting-room.modal.submit')}
-        open={isModalOpen}
-        onOk={() => form?.submit()}
-        onCancel={closeModel}
-        destroyOnClose={true}
-        maskClosable={false}
-        width={650}
-        transitionName=''
-        maskTransitionName=''>
+    <Modal
+      title={t(`mrl.meeting-room.modal.reserve`)}
+      okText={t('mrl.meeting-room.modal.submit')}
+      open={isModalOpen}
+      onOk={() => form?.submit()}
+      onCancel={closeModel}
+      destroyOnClose={true}
+      maskClosable={false}
+      width={650}
+      transitionName=''
+      maskTransitionName=''>
+      <Spin spinning={!!loading}>
         <Form name='meetingRoom' form={form} {...formLayout} onFinish={onFinish}>
           <Form.Item
             label={t('mrl.modal.reserve.meetingRoom')}
@@ -155,7 +155,7 @@ export default function ReserveMeetingRoom(props) {
             <TimePicker ref={timePickerRef} date={formDate} reservationList={reservationList} />
           </Form.Item>
         </Form>
-      </Modal>
-    </Spin>
+      </Spin>
+    </Modal>
   );
 }
