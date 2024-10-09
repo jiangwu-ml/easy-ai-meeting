@@ -1,4 +1,5 @@
 import { dateTimeformat } from '@/utils/dict';
+import { getUserInfo } from '@/utils/token';
 import { message } from 'antd';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
@@ -28,6 +29,7 @@ const TimePicker = React.forwardRef((props, ref) => {
   const { date, reservationList } = props;
   const [selectedTime, setSelectedTime] = useState([]);
   const { t } = useTranslation();
+  const { admin } = getUserInfo();
 
   useEffect(() => {
     // 每次切换 日期、会议室 ，清空当前已选的时间段
@@ -71,6 +73,7 @@ const TimePicker = React.forwardRef((props, ref) => {
       });
     });
   };
+
   /**
    * date : 'YYYY-MM-DD'
    * return的起止时间格式：'YYYY-MM-DD HH:mm:ss'
@@ -90,9 +93,9 @@ const TimePicker = React.forwardRef((props, ref) => {
       return false;
     }
 
-    // 2. 选择时间不超 2h
-    if (timeOrder.length > 4) {
-      message.error(t('mrl.meeting-room.modal.reserve.err.2h'));
+    // 2. 普通用户选择时间不超 2h。admin用户不得超过24h。但 目前暂不支持跨天
+    if (timeOrder.length > (admin ? 48 : 4)) {
+      message.error(t('mrl.meeting-room.modal.reserve.err.' + (admin ? '24h' : '2h')));
       return false;
     }
 

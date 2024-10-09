@@ -25,6 +25,7 @@
   "mrl.meeting-room.modal.reserve": "Reserve meetingRoom",
   "mrl.meeting-room.modal.reserve.err.continuous": "Please choose a continuous time period",
   "mrl.meeting-room.modal.reserve.err.2h": "The reserved period shall not exceed 2 hours",
+  "mrl.meeting-room.modal.reserve.err.24h": "The reserved period shall not exceed 24 hours",
   "mrl.meeting-room.modal.reserve.err.early": "The start time must not be earlier than the current time",
   "mrl.meeting-room.modal.reserve.success": "reserve Successfully",
   "mrl.msg.changeStatus.enable.success": "Enable Successfully",

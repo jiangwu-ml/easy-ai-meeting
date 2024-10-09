@@ -25,6 +25,7 @@
   "mrl.meeting-room.modal.reserve": "预定会议室",
   "mrl.meeting-room.modal.reserve.err.continuous": "必须选择连续的时间段",
   "mrl.meeting-room.modal.reserve.err.2h": "预定时长不得超过2小时",
+  "mrl.meeting-room.modal.reserve.err.24h": "预定时长不得超过24小时",
   "mrl.meeting-room.modal.reserve.err.early": "预定时间不得早于当前时刻",
   "mrl.meeting-room.modal.reserve.success": "预定成功",
   "mrl.msg.changeStatus.enable.success": "启用成功",
@@ -34,6 +35,7 @@
   "mrl.msg.update.success": "更新成功",
   "mrl.modal.msg.require": "请输入",
   "mrl.modal.reserve.meetingRoom": "会议室",
+  "mrl.modal.reserve.userId":"预订人",
   "mrl.modal.reserve.date": "预定日期",
   "mrl.modal.reserve.time": "预定时间"
 }

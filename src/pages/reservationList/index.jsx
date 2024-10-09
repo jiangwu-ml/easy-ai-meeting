@@ -155,7 +155,6 @@ export default function ReservationList() {
   };
   // 请求数据
   const tableRequest = async (params) => {
-    console.log('params', params);
     setLoading(true);
     const { pageSize, ...otherParams } = params;
     const getListParams = omitObjEmpty({

@@ -7,7 +7,7 @@ on:
       - develop # 指定动作下 会运行 workflow
 jobs:
   Explore-GitHub-Actions:
-    name: My Job
+    name: Deploy To Github Pages
     runs-on: ubuntu-latest # runs-on字段指定运行所需要的虚拟机环境。它是必填字段
     steps:
       # step 1

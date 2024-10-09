@@ -1,4 +1,4 @@
-import { useMeetingRoomSearchList } from '@/pages/reservationList/useHook';
+import { useMeetingRoomSearchList, useUserList } from '@/pages/meetingRoomList/useHook';
 import { dateformat } from '@/utils/dict';
 import { getUserInfo } from '@/utils/token';
 import { isNil } from '@ant-design/pro-components';
@@ -50,19 +50,20 @@ export default function ReserveMeetingRoom(props) {
   const { date: formDate } = form.getFieldsValue();
   const [loading, setLoading] = useState(false);
   const { meetingRoomList } = useMeetingRoomSearchList();
+  const { userList } = useUserList();
   const timePickerRef = useRef();
-  const { userId } = getUserInfo();
+  const { userId, admin } = getUserInfo();
   const [reservationListByDate, setReservationListByDate] = useState([]); //当前 选中会议室 的未来2周 的预订记录
   const [reservationList, setReservationList] = useState([]); //当前 选中会议室、选中日期  的预订记录
 
   useEffect(() => {
     const { roomId } = initialValue;
-    form.setFieldsValue({ ...initialValue });
+    form.setFieldsValue({ ...initialValue, userId });
     if (!isNil(roomId)) handleRoomIdChange(roomId); //初始化时获取默认选择的会议室的预订信息
   }, [initialValue]);
 
   const onFinish = async () => {
-    const { date, roomId } = form.getFieldsValue();
+    const { date, roomId, userId: formUserId } = form.getFieldsValue();
     const formatDate = date.format(dateformat);
     // 校验选择的时间段，校验通过则返回 起止时间
     const timeSeg = timePickerRef.current.validateTime(formatDate);
@@ -73,7 +74,7 @@ export default function ReserveMeetingRoom(props) {
       start: timeSeg.start,
       end: timeSeg.end,
       roomId,
-      userId,
+      userId: isNil(formUserId) ? userId : formUserId, //此字段只有admin用户可选。非admin用户不展示此字段，直接从本地取登录用户的id
       lock: false,
     };
     setLoading(true);
@@ -133,6 +134,19 @@ export default function ReserveMeetingRoom(props) {
             ]}>
             <Select options={meetingRoomList} onChange={handleRoomIdChange} />
           </Form.Item>
+          {admin && (
+            <Form.Item
+              label={t('mrl.modal.reserve.userId')}
+              name='userId'
+              rules={[
+                {
+                  required: true,
+                  message: t('mrl.modal.msg.require') + t('mrl.modal.reserve.userId'),
+                },
+              ]}>
+              <Select options={userList} />
+            </Form.Item>
+          )}
           <Form.Item
             label={t('mrl.modal.reserve.date')}
             name='date'
@@ -142,7 +156,7 @@ export default function ReserveMeetingRoom(props) {
                 message: t('mrl.modal.msg.require') + t('mrl.modal.reserve.date'),
               },
             ]}>
-            <DatePicker minDate={dayjs()} maxDate={dayjs().add(13, 'days')} onChange={handelDateChange} />
+            <DatePicker minDate={dayjs()} maxDate={dayjs().add(admin ? 29 : 13, 'days')} onChange={handelDateChange} />
           </Form.Item>
           <Form.Item
             label={t('mrl.modal.reserve.time')}
