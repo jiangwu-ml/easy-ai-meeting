@@ -1,1 +1,15 @@
-{}
+{
+  "login.username": "Username",
+  "login.password": "Password",
+  "login.submit": "Submit",
+  "login.h5": "Welcome to",
+  "login.form.msg.username": "Please enter Username",
+  "login.form.msg.password": "Please enter password",
+  "login.msg.login.success": "Login Successfully",
+  "login.msg.login.error": "Login failed",
+  "login.msg.logout.success": "Logout Successfully",
+  "login.msg.logout.confirm.content": "Are you sure to log out?",
+  "login.msg.logout.confirm.title": "Logout Confirmation",
+  "login.msg.logout.error": "Logout failed",
+  "login.logout": "Logout"
+}

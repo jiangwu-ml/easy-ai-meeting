@@ -111,6 +111,7 @@ export default function ReserveMeetingRoom(props) {
     <Modal
       title={t(`mrl.meeting-room.modal.reserve`)}
       okText={t('mrl.meeting-room.modal.submit')}
+      cancelText={t('msg.modal.cancelText')}
       open={isModalOpen}
       onOk={() => form?.submit()}
       onCancel={closeModel}
