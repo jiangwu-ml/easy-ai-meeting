@@ -3,14 +3,14 @@ import { getUserInfo } from '@/utils/token';
 import { omitObjEmpty } from '@/utils/utils';
 import { PlusOutlined } from '@ant-design/icons';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Popover, Spin } from 'antd';
-import { isNil } from 'lodash';
+import { Button, message, Popconfirm, Popover, Select, Spin } from 'antd';
 import moment from 'moment';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import ReserveMeetingRoom from '../meetingRoomList/components/reserveMeetingRoom';
 import { cancelReservation, getMeetingRoomSearchList, getReservationList, getUserSearchList } from './api';
+import style from './style.module.scss';
 
 export default function ReservationList() {
   const { admin } = getUserInfo();
@@ -19,6 +19,19 @@ export default function ReservationList() {
   const [loading, setLoading] = useState(false);
   const { state } = useLocation();
   const [isReserveModelOpen, setIsReserveModalOpen] = useState(false);
+
+  const renderFormItem = (_, something) => {
+    const { options } = something;
+    return (
+      <Select
+        mode='multiple'
+        allowClear
+        placeholder={t('please.select')}
+        options={options}
+        className={style.mutiple_select}
+      />
+    );
+  };
 
   const baseColumns = [
     {
@@ -82,13 +95,18 @@ export default function ReservationList() {
         );
       },
     },
-    // 以下两列，只用于搜索， 不展示
+    // 以下两列，只用于搜索， 不展示在table里
     {
       title: t('rl.columns.roomIdList'),
       dataIndex: 'roomIdList',
       search: true, //在搜索栏内展示
       hideInTable: true, //在Table中隐藏
-      initialValue: state?.roomId || undefined, //通过此属性实现 指定会议室的预订记录
+      initialValue: state?.roomId ? [state.roomId] : undefined, //通过此属性实现 默认值
+      /** request
+       * 大部分时候我们是从网络中获取数据，但是获取写一个 hooks 来请求数据还是比较繁琐的，同时还要定义一系列状态，所以我们提供了 request 和 params 来获取数据。
+       * request ：是一个 promise，需要返回一个 options 相同的数据
+       * params ：一般而言 request 是惰性的，params 修改会触发 request 的重新请求。
+       * */
       request: async () => {
         const { data = [] } = await getMeetingRoomSearchList();
         const userList = data.map(({ id, roomName }) => {
@@ -96,7 +114,13 @@ export default function ReservationList() {
         });
         return userList;
       },
-      params: '/user/searchList',
+      params: '/user/searchList', //此处并不发生改变
+      /* renderFormItem 方法 。返回的内容，是渲染查询表单的输入组件。*/
+      renderFormItem,
+      /* render 方法 。返回的内容，是渲染在表格里的。*/
+      // render: () => {
+      //   return xxx
+      // },
     },
   ];
   const columns = admin
@@ -107,9 +131,6 @@ export default function ReservationList() {
           dataIndex: 'userIdList',
           search: true,
           hideInTable: true,
-          // 大部分时候我们是从网络中获取数据，但是获取写一个 hooks 来请求数据还是比较繁琐的，同时还要定义一系列状态，所以我们提供了 request 和 params 来获取数据。
-          // request ：是一个 promise，需要返回一个 options 相同的数据
-          // params ：一般而言 request 是惰性的，params 修改会触发 request 的重新请求。
           request: async () => {
             const { data = [] } = await getUserSearchList();
             const userList = data.map(({ id, name }) => {
@@ -117,7 +138,8 @@ export default function ReservationList() {
             });
             return userList;
           },
-          params: '/user/searchList', //此处并不发生改变
+          params: '/user/searchListc',
+          renderFormItem,
         },
       ]
     : baseColumns;
@@ -135,17 +157,12 @@ export default function ReservationList() {
   const tableRequest = async (params) => {
     console.log('params', params);
     setLoading(true);
-    const { pageSize, userIdList, roomIdList, ...otherParams } = params;
+    const { pageSize, ...otherParams } = params;
     const getListParams = omitObjEmpty({
       size: pageSize,
-      userIdList: isNil(userIdList) ? userIdList : [userIdList],
-      roomIdList: isNil(roomIdList) ? roomIdList : [roomIdList],
       ...otherParams,
     });
-    const {
-      success,
-      data: { total = 0, records = [] },
-    } = await getReservationList(getListParams);
+    const { success, data: { total, records } = { total: 0, records: [] } } = await getReservationList(getListParams);
     setLoading(false);
     if (success) {
       return {

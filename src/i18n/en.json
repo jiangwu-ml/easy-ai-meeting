@@ -11,5 +11,6 @@
   "msg.confirm.cancel": "Confirm Cancel",
   "msg.modal.okText": "OK",
   "msg.modal.cancelText": "Cancel",
-  "msg.error.title": "Error Msg"
+  "msg.error.title": "Error Msg",
+  "please.select": "Please Select"
 }

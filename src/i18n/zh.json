@@ -11,5 +11,6 @@
   "msg.confirm.cancel": "确认取消？",
   "msg.modal.okText": "确认",
   "msg.modal.cancelText": "取消",
-  "msg.error.title": "错误提示"
+  "msg.error.title": "错误提示",
+  "please.select": "请选择"
 }
