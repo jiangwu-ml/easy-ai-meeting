@@ -1,4 +1,4 @@
-import { setToken, setUserInfo } from '@/utils/token';
+import { setLang, setToken, setUserInfo } from '@/utils/token';
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Form, Input, message, Space } from 'antd';
 import i18n from 'i18next';
@@ -28,6 +28,7 @@ function Login() {
   const handleMenuClick = (e) => {
     const { key } = e;
     i18n.changeLanguage(key);
+    setLang(key);
   };
   return (
     <div className={style.login_container}>

@@ -22,8 +22,15 @@ export function getUserInfo() {
   return userInfo ? JSON.parse(userInfo) : {};
 }
 
+export function getLang(lang) {
+  return get('lang', lang) || 'zh';
+}
+
 export function setToken(token) {
   set('session-token', token);
+}
+export function setLang(lang) {
+  set('lang', lang);
 }
 
 export function setUserInfo(token) {

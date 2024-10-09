@@ -1,6 +1,6 @@
 import { logout } from '@/pages/login/api';
 import { layoutChildren } from '@/router';
-import { removeToken, removeUserInfo } from '@/utils/token';
+import { removeToken, removeUserInfo, setLang } from '@/utils/token';
 import { omitArrEmpty } from '@/utils/utils';
 import { DownOutlined, ExclamationCircleOutlined, LogoutOutlined } from '@ant-design/icons';
 
@@ -43,6 +43,7 @@ const PageLayout = () => {
   const changeLang = (e) => {
     const { key } = e;
     i18n.changeLanguage(key);
+    setLang(key);
   };
   const logOut = async () => {
     setLoading(true);
