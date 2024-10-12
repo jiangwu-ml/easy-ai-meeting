@@ -2,7 +2,7 @@
 import { notification } from 'antd';
 import Axios from 'axios';
 import i18n from 'i18next';
-import { getToken } from './token';
+import { getToken, removeToken, removeUserInfo } from './token';
 // 1. 创建axios
 const request = Axios.create({
   // 基础路径
@@ -53,9 +53,9 @@ request.interceptors.response.use(
       description: message,
       onClose: () => {
         if (status === 401) {
-          // location.href = '/login';
-          // removeToken();
-          // removeUserInfo();
+          location.href = '/login';
+          removeToken();
+          removeUserInfo();
         }
       },
     });

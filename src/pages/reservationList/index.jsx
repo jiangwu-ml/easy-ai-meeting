@@ -38,7 +38,7 @@ export default function ReservationList() {
       dataIndex: 'index',
       valueType: 'index',
       title: t('mrl.columns.index'),
-      width: 48,
+      width: 55,
       search: false,
     },
     {

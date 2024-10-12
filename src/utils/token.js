@@ -31,6 +31,7 @@ export function setToken(token) {
 }
 export function setLang(lang) {
   set('lang', lang);
+  location.reload()//加上这行，ConfigProvider 才能拿到最新的语言选项
 }
 
 export function setUserInfo(token) {

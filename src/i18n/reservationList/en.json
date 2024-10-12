@@ -5,7 +5,7 @@
   "rl.columns.roomId": "RoomId",
   "rl.columns.roomName": "RoomName",
   "rl.columns.time": "Time",
-  "rl.columns.roomIdList": "MeetingRoom",
+  "rl.columns.roomIdList": "RoomName",
   "rl.columns.userIdList": "User",
   "rl.msg.cancelReservation.success": "CancelReservation Successfully",
   "rl.columns.actions.cancel": "Cancel Reservation",
