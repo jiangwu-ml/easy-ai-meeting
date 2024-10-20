@@ -117,6 +117,14 @@ const TimePicker = React.forwardRef((props, ref) => {
   };
 
   // 向父组件暴露子组件的 方法、data。
+  /**
+   * useImperativeHandle
+   * `useImperativeHandle` 的中文翻译可以是“使用命令式句柄”。
+   * 这个 Hook 用于在父组件中通过 ref 访问子组件中的实例值。简单来说，它允许开发者自定义暴露给父组件的 ref 对象的值。
+   *
+   * 句柄：“句柄”（Handle）是一个抽象的引用标识符，用于标识某个系统资源或对象。
+   * 句柄类似于指针，但它通常是由系统或应用程序管理的一个更高级别的引用，它隐藏了资源的具体实现细节。
+   * */
   useImperativeHandle(
     ref,
     () => ({ validateTime }), //父组件通过ref获取值，要在这里抛出

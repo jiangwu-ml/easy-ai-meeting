@@ -9,7 +9,13 @@ import { Navigate, useRoutes } from 'react-router-dom';
 export const layoutChildren = [
   // 注册
   {
-    // index:true,//不生效
+    /** index: true,
+     * 这个的作用是让他默认展示这个组件。
+     * 但是路由并不会变化。
+     * 拥有index属性的Route，它的path属性（写了也无效，等于这俩属性互斥）无效，它和其他子路由平级，它在父级路由未匹配其他任何子路由时展示
+     * （类似于fallback占位）而不是一个路由组件！！只是个占位！！！
+     * */
+    // index: true, //默认跳转不生效
     path: 'meeting-room-list',
     element: <MeetingRoomList />,
     icon: <HomeOutlined />,

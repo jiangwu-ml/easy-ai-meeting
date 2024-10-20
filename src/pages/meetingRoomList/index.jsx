@@ -180,8 +180,18 @@ export default function MeetingRoomList() {
   const closeReserveModel = () => {
     setIsReserveModalOpen(false);
   };
+
+  const [test, settest] = useState(0);
   return (
     <Spin spinning={loading}>
+      {test}{' '}
+      <button
+        onClick={() => {
+          settest(test + 1);
+          settest(test + 1);
+        }}>
+        add
+      </button>
       <ProTable
         columns={columns}
         actionRef={actionRef}
