@@ -1,12 +1,13 @@
-import react from "@vitejs/plugin-react";
-import path from "path";
-import { defineConfig } from "vite";
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: './',
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
     hmr: true,
   },
@@ -20,10 +21,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": {
-        target: "http://123.60.160.90:8080",
+      '/api': {
+        target: 'http://123.60.160.90:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },
