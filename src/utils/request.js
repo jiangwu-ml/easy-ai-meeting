@@ -3,10 +3,13 @@ import { notification } from 'antd';
 import Axios from 'axios';
 import i18n from 'i18next';
 import { getToken, removeToken, removeUserInfo } from './token';
+
+const { VITE_REQUEST_BASE_URL } = import.meta.env;
+console.log('import.meta', import.meta);
 // 1. 创建axios
 const request = Axios.create({
   // 基础路径
-  baseURL: '/api',
+  baseURL: VITE_REQUEST_BASE_URL,
   timeout: 5000,
 });
 
