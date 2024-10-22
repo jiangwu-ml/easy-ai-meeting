@@ -56,11 +56,13 @@ request.interceptors.response.use(
       description: message,
       onClose: () => {
         if (status === 401) {
-          location.href = '/login';
+          // location.href = '/login';//browser模式
+          window.location.hash = '/login'; //hash模式
           removeToken();
           removeUserInfo();
         }
       },
+      duration: 1,
     });
 
     return err.response.data;
