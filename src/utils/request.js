@@ -56,8 +56,9 @@ request.interceptors.response.use(
       description: message,
       onClose: () => {
         if (status === 401) {
-          // location.href = '/login';//browser模式
-          window.location.hash = '/login'; //hash模式
+          // location.href = '/login'; // browser模式
+          location.href = '/easy-ai-meeting/login'; // browser模式 + 有basename
+          // window.location.hash = '/login'; //hash模式
           removeToken();
           removeUserInfo();
         }
