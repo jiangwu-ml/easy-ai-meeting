@@ -4,8 +4,8 @@ import Axios from 'axios';
 import i18n from 'i18next';
 import { getToken, removeToken, removeUserInfo } from './token';
 
-const { VITE_REQUEST_BASE_URL } = import.meta.env;
-console.log('import.meta', import.meta);
+const { VITE_REQUEST_BASE_URL, MODE } = import.meta.env;
+
 // 1. 创建axios
 const request = Axios.create({
   // 基础路径
@@ -56,9 +56,12 @@ request.interceptors.response.use(
       description: message,
       onClose: () => {
         if (status === 401) {
-          // location.href = '/login'; // browser模式
-          location.href = '/easy-ai-meeting/login'; // browser模式 + 有basename
-          // window.location.hash = '/login'; //hash模式
+          if (MODE === 'githubPages') {
+            window.location.hash = '/login'; //hash模式
+          } else {
+            location.href = '/login'; // browser模式
+            // location.href = '/easy-ai-meeting/login'; // browser模式 + 有basename
+          }
           removeToken();
           removeUserInfo();
         }

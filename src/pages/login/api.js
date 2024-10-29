@@ -7,6 +7,7 @@ export function login(params) {
     data: params,
   });
 }
+// 登出
 export function logout() {
   return request({
     method: 'get',

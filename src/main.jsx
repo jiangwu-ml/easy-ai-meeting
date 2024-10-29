@@ -5,15 +5,24 @@ import { ConfigProvider } from 'antd';
 import enUS from 'antd/locale/en_US';
 import zhCN from 'antd/locale/zh_CN';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, HashRouter } from 'react-router-dom';
 import { getLang } from './utils/token';
 
+const mode = import.meta.env.MODE;
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
-  <BrowserRouter basename='/easy-ai-meeting'>
-    <ConfigProvider locale={getLang() === 'zh' ? zhCN : enUS}>
-      <App />
-    </ConfigProvider>
-  </BrowserRouter>,
+  mode === 'githubPages' ? (
+    <HashRouter>
+      <ConfigProvider locale={getLang() === 'zh' ? zhCN : enUS}>
+        <App />
+      </ConfigProvider>
+    </HashRouter>
+  ) : (
+    <BrowserRouter>
+      <ConfigProvider locale={getLang() === 'zh' ? zhCN : enUS}>
+        <App />
+      </ConfigProvider>
+    </BrowserRouter>
+  ),
 );
